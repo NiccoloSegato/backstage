@@ -1,0 +1,72 @@
+@font-face {
+    font-family: Satoshi;
+    src: url(../assets/fonts/Satoshi-Variable.ttf) format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+body {
+    background-color: #e8eaec;
+    font-family: Satoshi, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    border: none;
+    background-color: #FC6900;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: Satoshi, sans-serif;
+}
+main {
+    width: 90%;
+    margin: auto;
+}
+h1 {
+    font-size: clamp(2.2rem, 8vw, 60px);
+    margin: 50px 0 0 0;
+}
+.subtitle {
+    margin-top: 0px;
+}
+h2 {
+    margin: 30px 0 10px 0;
+}
+select {
+    background-color: white;
+    font-family: Satoshi, sans-serif;
+    font-size: 14px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 10px 20px;
+    border: none;
+    width: 100%;
+    max-width: 300px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+label {
+    display: block;
+}
+.input-field {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px 20px;
+    font-family: Satoshi, sans-serif;
+    font-size: 14px;
+    border: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 5px;
+}
+.color-field {
+    vertical-align : top;
+    box-sizing : border-box;
+    height: 39px;
+}
