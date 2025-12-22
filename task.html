@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Backstage</title>
+    <script src="scripts/db.js" defer></script>
+    <script src="scripts/task.js" defer></script>
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/task.css">
+</head>
+<body>
+    <main>
+        <p style="margin: 50px 0 0 0;"><strong>TASK</strong></p>
+        <h1 id="task-name" style="margin-top: 0;">-</h1>
+
+        <div id="task-completion-details">
+            <p id="completion-percentage">-</p>
+            <div id="progress-bar-container">
+                <div id="progress-bar-fill"></div>
+            </div>
+            <div id="task-times">
+                <p id="time-estimated">-</p>
+                <p id="time-remaining">-</p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

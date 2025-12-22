@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <td>${task.completionPercentage}%</td>
                     <td style="color: ${project.color};">${project.name}</td>
                 `;
+                taskRow.onclick = function() { taskClicked(this); };
                 // If the task is overdue, highlight the row in red
                 let today = new Date().toISOString().split('T')[0];
                 if (task.dueDate < today && task.completionPercentage < 100) {
@@ -44,6 +45,28 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+function taskClicked(row) {
+    let taskName = row.cells[0].innerText;
+    let projectName = row.cells[3].innerText;
+
+    // Load the database to find the task details
+    const db = loadDB();
+    let selectedTask = null;
+    db.projects.forEach(project => {
+        if (project.name === projectName) {
+            project.tasks.forEach(task => {
+                if (task.name === taskName) {
+                    selectedTask = task;
+                }
+            });
+        }
+    });
+    // Redirect to task.html with task id as query parameter
+    if (selectedTask) {
+        window.location.href = `task.html?taskId=${selectedTask.id}`;
+    }
+}
+
 function openNew() {
     window.location.href = "new.html";
-}   
+}

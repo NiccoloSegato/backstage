@@ -1,0 +1,29 @@
+#task-completion-details {
+    background-color: white;
+    padding: 20px;
+    width: calc(100% - 40px);
+    border-radius: 5px;
+    max-width: 300px;
+}
+#progress-bar-container {
+    width: 100%;
+    background-color: #f4f4f4;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 20px;
+    margin-top: 10px;
+}
+#progress-bar-fill {
+    background-color: #ec8900;
+    transition: width 0.5s;
+}
+#task-times {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#completion-percentage {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 10px 0 10px 0;
+}
