@@ -4,10 +4,28 @@
     gap: 15px;
 }
 .project-carousel-item {
-    border: 2px solid;
     border-radius: 10px;
     padding: 15px;
     min-width: 250px;
     box-sizing: border-box;
     color: white;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+    overflow: hidden;
+    border-radius: 5px;
+    text-align: left;
+}
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+}
+th {
+    background-color: #f4f4f4;
+}
+tr:hover {
+    background-color: #f1f1f1;
 }
