@@ -24,6 +24,8 @@ document.addEventListener("DOMContentLoaded", function() {
             console.log(progressBar.offsetWidth);
             progressBarFill.style.width = ((progressBarWidth * selectedTask.completionPercentage) / 100) + "px";
             console.log(((progressBarWidth * selectedTask.completionPercentage) / 100) + "px");
+            document.getElementById("time-estimated").innerText = selectedTask.estimatedTime + " h estimated";
+            document.getElementById("time-remaining").innerText = (selectedTask.estimatedTime * (100 - selectedTask.completionPercentage) / 100).toFixed(2) + " h remaining";
 
         } else {
             document.querySelector("main").innerHTML = `<p>Task not found.</p>`;

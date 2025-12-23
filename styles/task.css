@@ -1,9 +1,11 @@
-#task-completion-details {
+.task-card {
     background-color: white;
     padding: 20px;
     width: calc(100% - 40px);
     border-radius: 5px;
     max-width: 300px;
+    margin-top: 20px;
+    display: inline-block;
 }
 #progress-bar-container {
     width: 100%;
@@ -16,6 +18,17 @@
 #progress-bar-fill {
     background-color: #ec8900;
     transition: width 0.5s;
+    height: 100%;
+}
+.action-line {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+#task-name {
+    margin-top: 0;
+    margin-bottom: 20px;
 }
 #task-times {
     display: flex;
@@ -26,4 +39,7 @@
     font-size: 30px;
     font-weight: bold;
     margin: 10px 0 10px 0;
+}
+#task-times p {
+    margin-bottom: 0;
 }
