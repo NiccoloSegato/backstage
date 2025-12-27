@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New - Backstage</title>
-    <script src="scripts/db.js" defer></script>
-    <script src="scripts/new.js" defer></script>
+    <script type="module" src="scripts/new.js" defer></script>
     <link rel="stylesheet" href="styles/global.css">
     <link rel="stylesheet" href="styles/new.css">
 </head>
@@ -15,7 +14,7 @@
         <p class="subtitle">In this page you can create a project or add a task to an existing one.</p>
 
         <h2>Select project</h2>
-        <select id="project-select" onchange="selectedProjectChanged()">
+        <select id="project-select">
             <option value="new">+ New</option>
         </select>
 
@@ -24,7 +23,7 @@
             <input type="text" class="input-field" id="project-name" name="project-name" placeholder="Project name" required>
             <input type="color" class="color-field" id="project-color" name="project-color" value="#000000" required>
             <br>
-            <button type="button" onclick="submitNewProject()">Create Project</button>
+            <button class="primary-button" type="button" id="create-project-button">Create Project</button>
         </form>
         <form id="new-task-form" style="display: none;">
             <h2>Create a new task</h2>
@@ -34,8 +33,10 @@
             <input type="date" class="input-field" id="task-due-date" name="task-due-date" required>
             <label for="task-completion-percentage">Completion Percentage:</label>
             <input type="number" class="input-field" id="task-completion-percentage" name="task-completion-percentage" min="0" max="100" value="0" required>
+            <label for="task-estimated-time">Estimated Time (hours):</label>
+            <input type="number" class="input-field" id="task-estimated-time" name="task-estimated-time" min="0" value="0" required>
             <br>
-            <button type="button" onclick="submitNewTask()">Create Task</button>
+            <button class="primary-button" type="button" id="submit-task-button">Create Task</button>
         </form>
     </main>
 </body>

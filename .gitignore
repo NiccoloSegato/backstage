@@ -1,0 +1,21 @@
+# Dipendenze (la cartella creata da npm)
+node_modules/
+dist/
+
+# File di log e debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Variabili d'ambiente (dati sensibili come chiavi API)
+.env
+.env.local
+.env.*.local
+
+# File di sistema (macOS e Windows)
+.DS_Store
+Thumbs.db
+
+# Cartelle specifiche di Vite o altri strumenti
+.vscode/
+.idea/

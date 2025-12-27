@@ -12,7 +12,7 @@ body {
     padding: 0;
 }
 
-button {
+.primary-button {
     border: none;
     background-color: #FC6900;
     color: white;
@@ -21,6 +21,20 @@ button {
     cursor: pointer;
     border-radius: 5px;
     font-family: Satoshi, sans-serif;
+}
+.secondary-button {
+    border: none;
+    background-color: transparent;
+    border: 2px solid #424242;
+    color: #424242;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: Satoshi, sans-serif;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 main {
     width: 90%;

@@ -1,3 +1,5 @@
+import { loadDB } from './db.js';
+
 // Load the database from localStorage when the page loads
 document.addEventListener("DOMContentLoaded", function() {
     const db = loadDB();
@@ -43,6 +45,9 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }
     });
+
+    // Link the listeners to the buttons
+    document.getElementById("create-project-btn").addEventListener("click", openNew);
 });
 
 function taskClicked(row) {
@@ -69,4 +74,37 @@ function taskClicked(row) {
 
 function openNew() {
     window.location.href = "new.html";
+}
+
+function exportJSON() {
+    const db = loadDB();
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "backstage_data.json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+function importJSON() {
+    // Ask for confirmation before importing and overwriting existing data
+    if (!confirm("Importing data will overwrite your existing data. Are you sure you want to continue?")) {
+        return;
+    }
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = event => {
+            const importedData = JSON.parse(event.target.result);
+            localStorage.setItem('project-tracker-db', JSON.stringify(importedData));
+            alert("Data imported successfully! The page will now reload.");
+            location.reload();
+        };
+        reader.readAsText(file);
+    };
+    input.click();
 }

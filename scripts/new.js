@@ -1,3 +1,5 @@
+import { loadDB, saveDB } from "./db.js";
+
 // Load the database from localStorage when the page loads
 document.addEventListener("DOMContentLoaded", function() {
     const db = loadDB();
@@ -7,8 +9,16 @@ document.addEventListener("DOMContentLoaded", function() {
             <option value="${project.id}">${project.name}</option>
         `;
     });
+
+    // Listeners
+    document.getElementById("create-project-button").addEventListener("click", submitNewProject);
+    document.getElementById("project-select").addEventListener("change", selectedProjectChanged);
+    document.getElementById("submit-task-button").addEventListener("click", submitNewTask);
 });
 
+/**
+ * Handles the change event when the selected project changes.
+ */
 function selectedProjectChanged() {
     let selectObject = document.getElementById("project-select");
     let selectedValue = selectObject.value;
@@ -49,6 +59,7 @@ function submitNewTask() {
     let taskName = document.getElementById("task-name").value;
     let taskDueDate = document.getElementById("task-due-date").value;
     let taskCompletionPercentage = parseInt(document.getElementById("task-completion-percentage").value);
+    let taskEstimatedTime = parseFloat(document.getElementById("task-estimated-time").value);
     let selectObject = document.getElementById("project-select");
     let selectedProjectId = selectObject.value;
 
@@ -64,7 +75,8 @@ function submitNewTask() {
         name: taskName,
         dueDate: taskDueDate,
         completionPercentage: taskCompletionPercentage,
-        projectId: selectedProjectId
+        projectId: selectedProjectId,
+        estimatedTime: taskEstimatedTime
     };
 
     // Find the project and add the task ID to its tasks array
