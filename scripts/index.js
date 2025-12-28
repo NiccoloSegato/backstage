@@ -61,7 +61,7 @@ async function loadTasks() {
                     <td>${taskData.completionPercentage}%</td>
                     <td style="color: ${projectData.color};">${projectData.name}</td>
                 `;
-                taskRow.onclick = function() { taskClicked(taskDoc.id); };
+                taskRow.onclick = function() { taskClicked(projectDoc.id, taskDoc.id); };
 
                 // Highlight overdue or due today tasks
                 let today = new Date().toISOString().split('T')[0];
@@ -82,10 +82,11 @@ async function loadTasks() {
 
 /**
  * Function called when a task is clicked from the tasks table
+ * @param {string} projectId - The ID of the clicked project
  * @param {string} taskId - The ID of the clicked task
  */
-function taskClicked(taskId) {
-    window.location.href = `task.html?id=${taskId}`;
+function taskClicked(projectId, taskId) {
+    window.location.href = `task.html?projectId=${projectId}&taskId=${taskId}`;
 }
 
 /**
