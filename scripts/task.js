@@ -1,4 +1,4 @@
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "./db.js";
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -37,39 +37,30 @@ document.addEventListener("DOMContentLoaded", function() {
  * @returns 
  */
 function editTaskPercentage() {
-    console.log("Editing task percentage...");
     let newPercentage = parseInt(prompt("Enter new completion percentage (0-100):"));
     if (isNaN(newPercentage) || newPercentage < 0 || newPercentage > 100) {
         alert("Invalid percentage. Please enter a number between 0 and 100.");
         return;
     }
 
-    // Get taskId from URL
+    // Get taskId and projectId from URL
     const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('projectId');
     const taskId = urlParams.get('taskId');
-    if (!taskId) {
-        alert("Task ID not found in URL.");
+    if (!taskId || !projectId) {
+        alert("IDs not found in URL.");
         return;
     }
 
-    // Load DB and find the task
-    const db = loadDB();
-    let taskFound = false;
-    db.projects.forEach(project => {
-        if(project.tasks === undefined) return;
-        project.tasks.forEach(task => {
-            if (task.id === taskId) {
-                task.completionPercentage = newPercentage;
-                taskFound = true;
-            }
-        });
+    // Update the task in Firebase
+    const taskRef = doc(db, "databases", "skAvK4LFoplnfylt2ydZ", "projects", projectId, "tasks", taskId);
+    updateDoc(taskRef, {
+        completionPercentage: newPercentage
+    }).then(() => {
+        // Reload the page to reflect changes
+        window.location.reload();
+    }).catch((error) => {
+        console.error("Error updating task: ", error);
+        alert("Failed to update task.");
     });
-
-    if (taskFound) {
-        saveDB(db);
-        // Refresh the page to show updated percentage
-        location.reload();
-    } else {
-        alert("Task not found.");
-    }
 }
