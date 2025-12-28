@@ -1,33 +1,24 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-//import { loadDB } from './db.js';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAwx9IeSD2Ib9uYRAQaW9Kc_XtQoxjTIww",
-  authDomain: "backstage-tasks.firebaseapp.com",
-  projectId: "backstage-tasks",
-  storageBucket: "backstage-tasks.firebasestorage.app",
-  messagingSenderId: "949920359936",
-  appId: "1:949920359936:web:a3b2f881e6cb3f32a61ae5"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "./db.js";
 
 // Load the database from localStorage when the page loads
 document.addEventListener("DOMContentLoaded", function() {
     loadTasks();
+
+    // Set up event listeners
+    document.getElementById("create-project-btn").addEventListener("click", openNew);
 });
 
+/**
+ * Function to load tasks from Firestore and populate the UI
+ * @returns 
+ */
 async function loadTasks() {
-    console.log("Loading tasks from Firestore...");
     const querySnapshot = await getDocs(collection(db, "databases"));
     const data = [];
     querySnapshot.forEach((doc) => {
         data.push({ id: doc.id, ...doc.data() });
     });
-    console.log("Data loaded from Firestore:", data);
     
     // Check if data is empty
     if (data.length === 0) {
@@ -70,7 +61,7 @@ async function loadTasks() {
                     <td>${taskData.completionPercentage}%</td>
                     <td style="color: ${projectData.color};">${projectData.name}</td>
                 `;
-                taskRow.onclick = function() { taskClicked(this); };
+                taskRow.onclick = function() { taskClicked(taskDoc.id); };
 
                 // Highlight overdue or due today tasks
                 let today = new Date().toISOString().split('T')[0];
@@ -88,108 +79,18 @@ async function loadTasks() {
         document.getElementById(`task-count-${projectDoc.id}`).innerText = `${taskCount} tasks`;
     });
 }
-    /*const db = loadDB();
-    db.projects.forEach(project => {
-        // Count tasks for each project
-        let taskCount = project.tasks ? project.tasks.length : 0;
-        project.taskCount = taskCount;
 
-        let projectDiv = document.createElement("div");
-        projectDiv.className = "project-carousel-item";
-        projectDiv.style.backgroundColor = project.color;
-        projectDiv.innerHTML = `
-            <h2>${project.name}</h2>
-            <p>${project.taskCount} tasks</p>
-        `;
-        document.getElementById("projects-carousel").appendChild(projectDiv);
-
-        // Add the tasks to the tasks list, that is a table
-        if (project.tasks && project.tasks.length > 0) {
-            project.tasks.forEach(task => {
-                let tasksTableBody = document.querySelector("#projects-table tbody");
-                let taskRow = document.createElement("tr");
-                taskRow.innerHTML = `
-                    <td>${task.name}</td>
-                    <td>${task.dueDate}</td>
-                    <td>${task.completionPercentage}%</td>
-                    <td style="color: ${project.color};">${project.name}</td>
-                `;
-                taskRow.onclick = function() { taskClicked(this); };
-                // If the task is overdue, highlight the row in red
-                let today = new Date().toISOString().split('T')[0];
-                if (task.dueDate < today && task.completionPercentage < 100) {
-                    taskRow.style.backgroundColor = "#ffcccc";
-                }
-                // If the task is due today, highlight the row in yellow
-                else if (task.dueDate === today && task.completionPercentage < 100) {
-                    taskRow.style.backgroundColor = "#ffffcc";
-                }
-                // If the completion percentage is not 100%, add to the table
-                if (task.completionPercentage < 100) {
-                    tasksTableBody.appendChild(taskRow);
-                }
-            });
-        }
-    });
-
-    // Link the listeners to the buttons
-    document.getElementById("create-project-btn").addEventListener("click", openNew);*/
-
-function taskClicked(row) {
-    let taskName = row.cells[0].innerText;
-    let projectName = row.cells[3].innerText;
-
-    // Load the database to find the task details
-    const db = loadDB();
-    let selectedTask = null;
-    db.projects.forEach(project => {
-        if (project.name === projectName) {
-            project.tasks.forEach(task => {
-                if (task.name === taskName) {
-                    selectedTask = task;
-                }
-            });
-        }
-    });
-    // Redirect to task.html with task id as query parameter
-    if (selectedTask) {
-        window.location.href = `task.html?taskId=${selectedTask.id}`;
-    }
+/**
+ * Function called when a task is clicked from the tasks table
+ * @param {string} taskId - The ID of the clicked task
+ */
+function taskClicked(taskId) {
+    window.location.href = `task.html?id=${taskId}`;
 }
 
+/**
+ * Function to open the new project/task creation page
+ */
 function openNew() {
     window.location.href = "new.html";
-}
-
-function exportJSON() {
-    const db = loadDB();
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "backstage_data.json");
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-}
-
-function importJSON() {
-    // Ask for confirmation before importing and overwriting existing data
-    if (!confirm("Importing data will overwrite your existing data. Are you sure you want to continue?")) {
-        return;
-    }
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    input.onchange = e => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = event => {
-            const importedData = JSON.parse(event.target.result);
-            localStorage.setItem('project-tracker-db', JSON.stringify(importedData));
-            alert("Data imported successfully! The page will now reload.");
-            location.reload();
-        };
-        reader.readAsText(file);
-    };
-    input.click();
 }

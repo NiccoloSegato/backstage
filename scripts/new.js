@@ -1,20 +1,46 @@
-import { loadDB, saveDB } from "./db.js";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "./db.js";
 
-// Load the database from localStorage when the page loads
+/**
+ * Load the database from localStorage when the page loads
+ */
 document.addEventListener("DOMContentLoaded", function() {
-    const db = loadDB();
-    let selectObject = document.getElementById("project-select");
-    db.projects.forEach(project => {
-        selectObject.innerHTML += `
-            <option value="${project.id}">${project.name}</option>
-        `;
-    });
+    loadProjects();
 
     // Listeners
     document.getElementById("create-project-button").addEventListener("click", submitNewProject);
     document.getElementById("project-select").addEventListener("change", selectedProjectChanged);
     document.getElementById("submit-task-button").addEventListener("click", submitNewTask);
 });
+
+/**
+ * Load the projects from Firebase and populate the project selection dropdown.
+ */
+async function loadProjects() {
+    const querySnapshot = await getDocs(collection(db, "databases"));
+    const data = [];
+    querySnapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() });
+    });
+    
+    // Check if data is empty
+    if (data.length === 0) {
+        console.error("No databases found in Firestore.");
+        return;
+    }
+
+    // Iterate through documents in the database
+    const projects = await getDocs(collection(db, "databases", data[0].id, "projects"));
+    projects.forEach(async (projectDoc) => {
+        const projectData = projectDoc.data();
+
+        // Add project to the selection dropdown
+        let option = document.createElement("option");
+        option.value = projectDoc.id;
+        option.text = projectData.name;
+        document.getElementById("project-select").appendChild(option);
+    });
+}
 
 /**
  * Handles the change event when the selected project changes.
@@ -32,7 +58,11 @@ function selectedProjectChanged() {
     }
 }
 
-function submitNewProject() {
+/**
+ * Function to submit a new project to Firestore.
+ * @returns 
+ */
+async function submitNewProject() {
     let projectName = document.getElementById("project-name").value;
     let projectColor = document.getElementById("project-color").value;
     // Check if project name is provided
@@ -41,21 +71,23 @@ function submitNewProject() {
         return;
     }
 
-    const db = loadDB();
-    const newProject = {
-        id: "p_" + Date.now(), // semplice e sufficiente
-        name: projectName,
-        color: projectColor
-    };
-
-    db.projects.push(newProject);
-    saveDB(db);
-
-    // Redirect to home page
-    window.location.href = "index.html";
+    // Add the new project to the skAvK4LFoplnfylt2ydZ database in Firestore
+    try {
+        await addDoc(collection(db, "databases", "skAvK4LFoplnfylt2ydZ", "projects"), {
+            name: projectName,
+            color: projectColor
+        });
+        window.location.href = "index.html";
+    } catch (e) {
+        console.error("Error adding document: ", e);
+    }
 }
 
-function submitNewTask() {
+/**
+ * Function to submit a new task to the selected project in Firestore.
+ * @returns 
+ */
+async function submitNewTask() {
     let taskName = document.getElementById("task-name").value;
     let taskDueDate = document.getElementById("task-due-date").value;
     let taskCompletionPercentage = parseInt(document.getElementById("task-completion-percentage").value);
@@ -69,31 +101,17 @@ function submitNewTask() {
         return;
     }
 
-    const db = loadDB();
-    const newTask = {
-        id: "t_" + Date.now(), // semplice e sufficiente
-        name: taskName,
-        dueDate: taskDueDate,
-        completionPercentage: taskCompletionPercentage,
-        projectId: selectedProjectId,
-        estimatedTime: taskEstimatedTime
-    };
-
-    // Find the project and add the task ID to its tasks array
-    const project = db.projects.find(proj => proj.id === selectedProjectId);
-    if (!project) {
-        alert("Selected project not found.");
-        return;
+    try {
+        // Add the new task to the selected project in Firestore
+        await addDoc(collection(db, "databases", "skAvK4LFoplnfylt2ydZ", "projects", selectedProjectId, "tasks"), {
+            name: taskName,
+            dueDate: taskDueDate,
+            completionPercentage: taskCompletionPercentage,
+            estimatedTime: taskEstimatedTime
+        });
+    } catch (e) {
+        console.error("Error adding document: ", e);
     }
-    db.projects.forEach(proj => {
-        if (proj.id === selectedProjectId) {
-            if (!proj.tasks) {
-                proj.tasks = [];
-            }
-            proj.tasks.push(newTask);
-        }
-    });
-    saveDB(db);
 
     // Redirect to home page
     window.location.href = "index.html";

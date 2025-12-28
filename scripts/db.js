@@ -1,10 +1,17 @@
-const STORAGE_KEY = "project-tracker-db";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
-export function loadDB() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : { projects: [] };
-}
+const firebaseConfig = {
+  apiKey: "AIzaSyAwx9IeSD2Ib9uYRAQaW9Kc_XtQoxjTIww",
+  authDomain: "backstage-tasks.firebaseapp.com",
+  projectId: "backstage-tasks",
+  storageBucket: "backstage-tasks.firebasestorage.app",
+  messagingSenderId: "949920359936",
+  appId: "1:949920359936:web:a3b2f881e6cb3f32a61ae5"
+};
 
-export function saveDB(db) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-}
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+export { db };
