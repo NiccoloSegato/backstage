@@ -1,3 +1,5 @@
+import { loadDB, saveDB } from "./db.js";
+
 document.addEventListener("DOMContentLoaded", function() {
     // Check if there is a taskId in the query parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -30,6 +32,9 @@ document.addEventListener("DOMContentLoaded", function() {
             document.querySelector("main").innerHTML = `<p>Task not found.</p>`;
         }
     }
+
+    // Listeners
+    document.getElementById("edit-task-percentage-btn").addEventListener("click", editTaskPercentage);
 });
 
 /**

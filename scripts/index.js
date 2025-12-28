@@ -1,8 +1,94 @@
-import { loadDB } from './db.js';
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+//import { loadDB } from './db.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAwx9IeSD2Ib9uYRAQaW9Kc_XtQoxjTIww",
+  authDomain: "backstage-tasks.firebaseapp.com",
+  projectId: "backstage-tasks",
+  storageBucket: "backstage-tasks.firebasestorage.app",
+  messagingSenderId: "949920359936",
+  appId: "1:949920359936:web:a3b2f881e6cb3f32a61ae5"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // Load the database from localStorage when the page loads
 document.addEventListener("DOMContentLoaded", function() {
-    const db = loadDB();
+    loadTasks();
+});
+
+async function loadTasks() {
+    console.log("Loading tasks from Firestore...");
+    const querySnapshot = await getDocs(collection(db, "databases"));
+    const data = [];
+    querySnapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() });
+    });
+    console.log("Data loaded from Firestore:", data);
+    
+    // Check if data is empty
+    if (data.length === 0) {
+        console.error("No databases found in Firestore.");
+        return;
+    }
+    // Change the title of the page to the user's database name
+    document.getElementById("db-name").innerText = data[0].name;
+
+    // Iterate through documents in the database
+    const projects = await getDocs(collection(db, "databases", data[0].id, "projects"));
+    projects.forEach(async (projectDoc) => {
+        const projectData = projectDoc.data();
+        let taskCount = 0;
+
+        // Create project carousel item
+        let projectDiv = document.createElement("div");
+        projectDiv.className = "project-carousel-item";
+        projectDiv.style.backgroundColor = projectData.color;
+        projectDiv.innerHTML = `
+            <h2>${projectData.name}</h2>
+            <p id="task-count-${projectDoc.id}">0 tasks</p>
+        `;
+        document.getElementById("projects-carousel").appendChild(projectDiv);
+
+        // Load tasks for the project
+        const tasksSnapshot = await getDocs(collection(db, "databases", data[0].id, "projects", projectDoc.id, "tasks"));
+        const tasksTableBody = document.querySelector("#projects-table tbody");
+        tasksSnapshot.forEach((taskDoc) => {
+            const taskData = taskDoc.data();
+            // Only count tasks that are not completed
+            if (taskData.completionPercentage < 100) {
+                taskCount++;
+
+                // Create task row
+                let taskRow = document.createElement("tr");
+                taskRow.innerHTML = `
+                    <td>${taskData.name}</td>
+                    <td>${taskData.dueDate}</td>
+                    <td>${taskData.completionPercentage}%</td>
+                    <td style="color: ${projectData.color};">${projectData.name}</td>
+                `;
+                taskRow.onclick = function() { taskClicked(this); };
+
+                // Highlight overdue or due today tasks
+                let today = new Date().toISOString().split('T')[0];
+                if (taskData.dueDate < today) {
+                    taskRow.style.backgroundColor = "#ffcccc"; // Overdue
+                } else if (taskData.dueDate === today) {
+                    taskRow.style.backgroundColor = "#ffffcc"; // Due today
+                }
+
+                tasksTableBody.appendChild(taskRow);
+            }
+        });
+
+        // Update task count in project carousel
+        document.getElementById(`task-count-${projectDoc.id}`).innerText = `${taskCount} tasks`;
+    });
+}
+    /*const db = loadDB();
     db.projects.forEach(project => {
         // Count tasks for each project
         let taskCount = project.tasks ? project.tasks.length : 0;
@@ -47,8 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Link the listeners to the buttons
-    document.getElementById("create-project-btn").addEventListener("click", openNew);
-});
+    document.getElementById("create-project-btn").addEventListener("click", openNew);*/
 
 function taskClicked(row) {
     let taskName = row.cells[0].innerText;
